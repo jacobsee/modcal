@@ -1,0 +1,37 @@
+# Binaries
+modcal
+trakt-auth
+anilist-auth
+mal-auth
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test files
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+plugins/*/README.md
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml

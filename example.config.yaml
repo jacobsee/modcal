@@ -1,0 +1,101 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+auth:
+  method: "apikey"  # Options: "none" or "apikey"
+  apiKey: "your-secret-api-key-here"
+
+scheduler:
+  interval: 15m  # How often to refresh events from plugins
+
+plugins:
+  - id: "example-1"
+    type: "example"
+    config:
+      message: "Example Event from Plugin 1"
+
+  - id: "example-2"
+    type: "example"
+    config:
+      message: "Example Event from Plugin 2"
+
+  - id: "example-3"
+    type: "example"
+    config:
+      message: "Example Event from Plugin 3"
+
+  # Trakt plugin - fetches episodes from shows you're watching
+  # To use this:
+  # 1. Create an app at https://trakt.tv/oauth/applications
+  # 2. Get your Client ID
+  # 3. Get an OAuth access token (see Trakt API docs)
+  - id: "trakt-watched"
+    type: "trakt"
+    config:
+      clientId: "your-trakt-client-id"
+      accessToken: "your-trakt-oauth-access-token"
+      daysBack: 7        # Look back 7 days for past episodes
+      daysForward: 14    # Look forward 14 days for upcoming episodes
+
+  # AniList plugin - fetches anime episodes you're currently watching
+  # To use this:
+  # 1. Create an app at https://anilist.co/settings/developer
+  # 2. Run: ./anilist-auth -client-id YOUR_ID -client-secret YOUR_SECRET
+  # 3. Follow the OAuth flow to get your access token
+  - id: "anilist-watching"
+    type: "anilist"
+    config:
+      accessToken: "your-anilist-oauth-access-token"
+      daysBack: 7        # Look back 7 days for past episodes
+      daysForward: 14    # Look forward 14 days for upcoming episodes
+
+  # MyAnimeList plugin - fetches anime broadcast schedule
+  # To use this:
+  # 1. Create an app at https://myanimelist.net/apiconfig
+  # 2. Run: ./mal-auth -client-id YOUR_ID -client-secret YOUR_SECRET
+  # 3. Follow the OAuth PKCE flow to get your access token
+  - id: "mal-watching"
+    type: "mal"
+    config:
+      clientId: "your-mal-client-id"
+      accessToken: "your-mal-oauth-access-token"
+      refreshToken: "your-mal-refresh-token"  # Optional but recommended
+      weeksBack: 1        # Look back 1 week for past episodes
+      weeksForward: 2     # Look forward 2 weeks for upcoming episodes
+
+calendars:
+  - name: "tv-shows"
+    description: "TV Show Calendar (Live Action)"
+    plugins:
+      - "trakt-watched"
+
+  - name: "anime"
+    description: "Anime Calendar (AniList)"
+    plugins:
+      - "anilist-watching"
+
+  - name: "anime-mal"
+    description: "Anime Calendar (MyAnimeList)"
+    plugins:
+      - "mal-watching"
+
+  - name: "all-anime"
+    description: "All Anime (AniList + MAL)"
+    plugins:
+      - "anilist-watching"
+      - "mal-watching"
+
+  - name: "all-shows"
+    description: "All TV Shows and Anime"
+    plugins:
+      - "trakt-watched"
+      - "anilist-watching"
+      - "mal-watching"
+
+  - name: "example-calendar"
+    description: "Example Calendar with Sample Events"
+    plugins:
+      - "example-1"
+      - "example-2"
+      - "example-3"

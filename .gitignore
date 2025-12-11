@@ -1,0 +1,30 @@
+# Binaries
+/modcal
+/trakt-auth
+/anilist-auth
+/mal-auth
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Coverage
+*.out
+*.prof
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config
+config.yaml
