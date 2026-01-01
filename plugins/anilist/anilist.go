@@ -136,13 +136,7 @@ func (p *AniListPlugin) getWatchingList(ctx context.Context, userID int) ([]int,
 	}
 	`
 
-	variables := map[string]interface{}{
-		"userId": userID,
-		"type":   "ANIME",
-		"status": "CURRENT",
-	}
-
-	var response struct {
+	type mediaListResponse struct {
 		Data struct {
 			MediaListCollection struct {
 				Lists []struct {
@@ -156,14 +150,46 @@ func (p *AniListPlugin) getWatchingList(ctx context.Context, userID int) ([]int,
 		} `json:"data"`
 	}
 
-	if err := p.executeQuery(ctx, query, variables, &response); err != nil {
+	currentVariables := map[string]interface{}{
+		"userId": userID,
+		"type":   "ANIME",
+		"status": "CURRENT",
+	}
+
+	var currentResponse mediaListResponse
+	if err := p.executeQuery(ctx, query, currentVariables, &currentResponse); err != nil {
 		return nil, err
 	}
 
+	planningVariables := map[string]interface{}{
+		"userId": userID,
+		"type":   "ANIME",
+		"status": "PLANNING",
+	}
+
+	var planningResponse mediaListResponse
+	if err := p.executeQuery(ctx, query, planningVariables, &planningResponse); err != nil {
+		return nil, err
+	}
+
+	mediaIDMap := make(map[int]bool)
 	var mediaIDs []int
-	for _, list := range response.Data.MediaListCollection.Lists {
+
+	for _, list := range currentResponse.Data.MediaListCollection.Lists {
 		for _, entry := range list.Entries {
-			mediaIDs = append(mediaIDs, entry.Media.ID)
+			if !mediaIDMap[entry.Media.ID] {
+				mediaIDMap[entry.Media.ID] = true
+				mediaIDs = append(mediaIDs, entry.Media.ID)
+			}
+		}
+	}
+
+	for _, list := range planningResponse.Data.MediaListCollection.Lists {
+		for _, entry := range list.Entries {
+			if !mediaIDMap[entry.Media.ID] {
+				mediaIDMap[entry.Media.ID] = true
+				mediaIDs = append(mediaIDs, entry.Media.ID)
+			}
 		}
 	}
 
